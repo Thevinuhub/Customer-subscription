@@ -13,11 +13,62 @@
 **Target**: Reduce churn to 15% within 6 months through targeted retention (est. ₹4.5M revenue recovery).
 
 ## 📊 Key Findings (SQL Analysis)
+ # Query 1 :
+ -- Overall Churn Rate
+ 
+ SELECT 
+    ROUND(AVG(churn_flag) * 100, 1) AS churn_rate_pct,
+    COUNT(*) AS total_customers,
+    SUM(churn_flag) AS churned_customers
+FROM consumer_subscription;
 
-| Business Problem         | Your SQL Insight                     | Solution Delivered                                             |
-| ------------------------ | ------------------------------------ | -------------------------------------------------------------- |
-| 28.4% High Churn         | Query #1: Measured exact rate        | Baseline established for tracking improvement                  |
-| "Low usage" (42%)        | Query #5: Top reason identified      | Personalized content nudges for low engagement_score users     |
-| Premium LTV loss ₹11K    | Query #6: Quantified revenue leakage | Tiered pricing - Basic+ plan for price-sensitive Premium users |
-| South-Mobile 18-24 (38%) | Query #4: High-risk segment found    | Targeted campaigns - Regional content + mobile UX fixes        |
-| 67 at-risk customers     | Query #8: Early warning list         | Win-back campaigns - 20% discount + content bundles            |
+# Query 4 : 
+-- Churn by Region + Age Group
+
+SELECT 
+    region,
+    age_group,
+    COUNT(*) AS customers,
+    ROUND(AVG(churn_flag)*100, 1) AS churn_pct
+FROM consumer_subscription
+GROUP BY region, age_group
+ORDER BY churn_pct DESC;
+
+# Query 5 :
+
+-- Top Churn Reasons Ranking
+
+SELECT 
+    churn_reason,
+    COUNT(*) AS frequency,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER(), 1) AS pct_of_churns
+FROM  consumer_subscription
+WHERE churn_flag = 1
+GROUP BY churn_reason
+ORDER BY frequency DESC;
+
+# Query 6 :
+
+-- Lifetime Value Loss from Churn
+
+SELECT 
+    churn_flag,
+    ROUND(AVG(lifetime_value), 0) AS avg_ltv,
+    ROUND(SUM(lifetime_value), 0) AS total_ltv_exposure
+FROM  consumer_subscription
+GROUP BY churn_flag;
+
+# Query 8 :
+
+-- At-Risk Customers
+
+
+WITH at_risk AS (
+    SELECT user_id, churn_probability, lifetime_value
+    FROM  consumer_subscription
+    WHERE churn_flag = 0 AND churn_probability > 0.6
+)
+SELECT COUNT(*) AS at_risk_customers, 
+       ROUND(AVG(churn_probability)*100, 1) AS avg_risk_pct
+FROM at_risk;
+
