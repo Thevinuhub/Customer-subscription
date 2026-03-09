@@ -1,9 +1,12 @@
- SELECT 
+-- Overall Churn Rate
+
+SELECT 
     ROUND(AVG(churn_flag) * 100, 1) AS churn_rate_pct,
     COUNT(*) AS total_customers,
     SUM(churn_flag) AS churned_customers
 FROM consumer_subscription;
 
+-- Churn by Subscription Plan
 
 SELECT 
     subscription_plan,
@@ -14,6 +17,7 @@ FROM  consumer_subscription
 GROUP BY subscription_plan
 ORDER BY churn_rate_pct DESC;
 
+-- High-Value Customer Churn Risk
 
 SELECT 
     COUNT(*) AS high_value_at_risk,
@@ -21,6 +25,7 @@ SELECT
 FROM  consumer_subscription
 WHERE lifetime_value > 3000 AND churn_probability > 0.7;
 
+-- Churn by Region + Age Group
 
 SELECT 
     region,
@@ -31,6 +36,7 @@ FROM consumer_subscription
 GROUP BY region, age_group
 ORDER BY churn_pct DESC;
 
+-- Top Churn Reasons Ranking
 
 
 SELECT 
@@ -42,7 +48,7 @@ WHERE churn_flag = 1
 GROUP BY churn_reason
 ORDER BY frequency DESC;
 
-
+-- Lifetime Value Loss from Churn
 
 SELECT 
     churn_flag,
@@ -51,6 +57,7 @@ SELECT
 FROM  consumer_subscription
 GROUP BY churn_flag;
 
+-- Engagement Score vs Churn
 
 
 SELECT 
@@ -66,6 +73,8 @@ GROUP BY 1
 ORDER BY churn_rate_pct DESC;
 
 
+-- At-Risk Customers
+
 
 WITH at_risk AS (
     SELECT user_id, churn_probability, lifetime_value
@@ -76,6 +85,7 @@ SELECT COUNT(*) AS at_risk_customers,
        ROUND(AVG(churn_probability)*100, 1) AS avg_risk_pct
 FROM at_risk;
 
+-- Acquisition Channel ROI
 
 
 SELECT 
@@ -88,6 +98,8 @@ GROUP BY acquisition_channel
 ORDER BY churn_pct DESC;
 
 
+-- Payment Issues Driving Churn
+
 
 SELECT 
     payment_failures,
@@ -99,7 +111,7 @@ GROUP BY payment_failures, customer_support_tickets
 HAVING payment_failures > 0 OR customer_support_tickets > 0
 ORDER BY churn_rate_pct DESC;
 
-
+-- Monthly Churn Trend
 
 SELECT 
     DATE_FORMAT(signup_date, '%Y-%m') AS signup_month,
@@ -110,6 +122,8 @@ GROUP BY DATE_FORMAT(signup_date, '%Y-%m')
 ORDER BY signup_month DESC
 LIMIT 12;
 
+
+-- Retention Opportunity Score (Top 10)
 
 
 SELECT 
@@ -122,6 +136,8 @@ WHERE churn_flag = 0
 ORDER BY retention_potential DESC
 LIMIT 10;
 
+
+-- KPIs
 
 
 SELECT 
