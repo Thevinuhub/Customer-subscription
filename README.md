@@ -10,7 +10,7 @@
 
 **Impact**: Eroding MRR, forcing 2x customer acquisition spend to offset losses.
 
-**Target**: Reduce churn to 15% within 6 months through targeted retention (est. ₹4.5M revenue recovery).
+**Target**: Reduce churn to 15% within 6 months through targeted retention (est. ₹1.5M revenue recovery).
 
 ## 📊 Key Findings (SQL Analysis)
  # Query 1 :
